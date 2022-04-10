@@ -1,16 +1,39 @@
-# This is a sample Python script.
+import requests
+from pprint import pprint
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+BASE_URL = 'https://api.vk.com/method/'
+API_VER = '5.131'
 
 
-# Press the green button in the gutter to run the script.
+class VkUser:
+    base_url = BASE_URL
+
+    def __init__(self, token, api_ver):
+        self.params = {
+            'access_token': token,
+            'v': api_ver,
+        }
+
+    def get_photos(self,
+                    user_ids: str,
+                    return_system: int = 0):
+        url = self.base_url + 'friends.getLists'
+        # url = self.base_url + 'users.get'
+        params = {
+            'user_ids': user_ids,
+            'return_system': return_system,
+        }
+        params.update(self.params)
+        print(url)
+        print(params)
+        response = requests.get(url, params=params)
+        print(response)
+        pprint(response.json())
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    with open('Token.txt', 'r') as f:
+        token = f.read().strip()
+    print(token)
+    user1 = VkUser(token=token, api_ver=API_VER)
+    # user1.get_friends(user_ids='1,2')
