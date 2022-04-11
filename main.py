@@ -32,7 +32,7 @@ class VkUser:
 
 
 if __name__ == '__main__':
-    with open('Token.txt', 'r') as f:
+    with open('requiremеnts.txt', 'r') as f:
         token = f.read().strip()
     print(token)
     user1 = VkUser(token=token, api_ver=API_VER)
