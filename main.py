@@ -137,9 +137,16 @@ def get_info_max_sz_photo(photos_items: list):
 
     return photos
 
+def check_int(s):
+    if s[0] in ('-', '+'):
+        return s[1:].isdigit()
+    return s.isdigit()
 
 if __name__ == '__main__':
-    owner_id = input("Enter VK User UD:")
+    owner_id = input("Enter VK User ID:")
+    if not check_int(owner_id):
+        print("ID not integer")
+        exit()
     # grab photos url from VK
     user1 = VkApi(token=TOKEN_VK, api_ver=API_VK_VER)
     photos_json = user1.get_photos(owner_id=owner_id, verbose=False)
