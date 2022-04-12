@@ -3,6 +3,7 @@ from pprint import pprint
 import os
 from dotenv import load_dotenv
 from tqdm import tqdm
+import json
 
 BASE_VK_URL = 'https://api.vk.com/method/'
 API_VK_VER = '5.131'
@@ -25,7 +26,24 @@ class YaDiskApi:
             'Authorization': f'OAuth {self.token}'
         }
 
-    def upload_file_to_yadisk(self,
+    def _get_upload_link(self, dst_path: str):
+        """Получить ссылку на яндекс диск для загрузки файла"""
+        upload_url = self.base_url + "/v1/disk/resources/upload"
+        headers = self._get_header()
+        params = {"path": dst_path, "overwrite": "true"}
+        response = requests.get(upload_url, headers=headers, params=params)
+        return response.json()
+
+    def upload_file(self, dst_path: str, file: str):
+        """Метод загружает файл на яндекс диск"""
+        href_json = self._get_upload_link(dst_path)
+        href = href_json["href"]
+        response = requests.put(href, data=file)
+        response.raise_for_status()
+        if response.status_code == 201:
+            print(f"Success upload file on Disk {dst_path}")
+
+    def upload_file_from_url(self,
                               src_path: str,
                               dst_path: str,
                               verbose: bool = False):
@@ -137,10 +155,12 @@ def get_info_max_sz_photo(photos_items: list):
 
     return photos
 
+
 def check_int(s):
     if s[0] in ('-', '+'):
         return s[1:].isdigit()
     return s.isdigit()
+
 
 if __name__ == '__main__':
     owner_id = input("Enter VK User ID:")
@@ -159,7 +179,11 @@ if __name__ == '__main__':
     for photo in tqdm(max_sz_photos):
         dst_path = path + '/' + photo['file_name']
         src_path = photo['url']
-        resp = disk.upload_file_to_yadisk(src_path=src_path, dst_path=dst_path, verbose=False)
+        resp = disk.upload_file_from_url(src_path=src_path, dst_path=dst_path, verbose=False)
         if resp.status_code == 202:
             info.append(photo)
     print("Done")
+    # Добавить информацию о загруженных файлах
+    json_object = json.dumps(max_sz_photos, indent=4)
+    dst_path = path + '/' + 'info.json'
+    disk.upload_file(dst_path=dst_path, file=json_object)
