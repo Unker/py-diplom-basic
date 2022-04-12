@@ -139,9 +139,10 @@ def get_info_max_sz_photo(photos_items: list):
 
 
 if __name__ == '__main__':
+    owner_id = input("Enter VK User UD:")
     # grab photos url from VK
     user1 = VkApi(token=TOKEN_VK, api_ver=API_VK_VER)
-    photos_json = user1.get_photos(verbose=False)
+    photos_json = user1.get_photos(owner_id=owner_id, verbose=False)
     max_sz_photos = get_info_max_sz_photo(photos_json)
     # save photos to YaDisk
     disk = YaDiskApi(TOKEN_YA)
