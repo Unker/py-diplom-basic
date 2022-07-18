@@ -32,11 +32,11 @@ class YaDiskApi:
         headers = self._get_header()
         params = {"path": dst_path, "overwrite": "true"}
         response = requests.get(upload_url, headers=headers, params=params)
-        return response.json()
+        return response
 
     def upload_file(self, dst_path: str, file: str):
         """Метод загружает файл на яндекс диск"""
-        href_json = self._get_upload_link(dst_path)
+        href_json = self._get_upload_link(dst_path).json()
         href = href_json["href"]
         response = requests.put(href, data=file)
         response.raise_for_status()
@@ -88,6 +88,8 @@ class YaDiskApi:
                     print(f"The folder '{folder}' has created")
                 else:
                     print(f"Error {response.status_code}")
+
+        return response
 
 
 class VkApi:
